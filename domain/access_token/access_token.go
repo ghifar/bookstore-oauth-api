@@ -1,6 +1,8 @@
 package access_token
 
 import (
+	"github.com/ghifar/bookstore-oauth-api/domain/utils/errors"
+	"strings"
 	"time"
 )
 
@@ -26,4 +28,22 @@ func GetNewAccessToken() AccessToken {
 
 func (accessToken *AccessToken) isExpired() bool {
 	return false
+}
+
+func (accessToken *AccessToken) Validate() *errors.RestErr {
+	accessTokenId := strings.TrimSpace(accessToken.AccessToken)
+	if len(accessTokenId) == 0 {
+		return errors.NewBadRequestError("invalid access token")
+	}
+
+	if accessToken.UserId <= 0 {
+		return errors.NewBadRequestError("invalid access token")
+	}
+	if accessToken.ClientId <= 0 {
+		return errors.NewBadRequestError("invalid clientid")
+	}
+	if accessToken.Expires <= 0 {
+		return errors.NewBadRequestError("invalid expires")
+	}
+	return nil
 }
