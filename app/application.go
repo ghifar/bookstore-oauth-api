@@ -1,6 +1,7 @@
 package app
 
 import (
+	"github.com/ghifar/bookstore-oauth-api/clients/cassandra"
 	"github.com/ghifar/bookstore-oauth-api/domain/access_token"
 	"github.com/ghifar/bookstore-oauth-api/domain/db_repository/db"
 	"github.com/ghifar/bookstore-oauth-api/http"
@@ -8,10 +9,16 @@ import (
 )
 
 var (
-	router =  gin.Default()
+	router = gin.Default()
 )
 
 func StartApp() {
+	session, err := cassandra.GetSession()
+	if err != nil {
+		panic(err)
+	}
+	session.Close()
+
 	tokenService := access_token.NewService(db.NewRepository())
 	tokenHandler := http.NewHandler(tokenService)
 
